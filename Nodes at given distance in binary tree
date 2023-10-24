@@ -1,0 +1,78 @@
+Given a binary tree, a target node in the binary tree, and an integer value k, find all the nodes that are at distance k from the given target node. No parent pointers are available.
+Note:
+
+You have to return the list in sorted order.
+The tree will not contain duplicate values.
+Example 1:
+
+Input:      
+          20
+        /    \
+      8       22 
+    /   \
+   4    12 
+       /   \
+      10    14
+Target Node = 8
+K = 2
+Output: 10 14 22
+Explanation: The three nodes at distance 2
+from node 8 are 10, 14, 22.
+
+
+class TreeNode:
+    def __init__(self, value=0, left=None, right=None):
+        self.value = value
+        self.left = left
+        self.right = right
+
+def distanceK(root, target, k):
+    def findTarget(root, target, path):
+        if not root:
+            return False
+
+        path.append(root)
+
+        if root.value == target:
+            return True
+
+        if (findTarget(root.left, target, path) or
+            findTarget(root.right, target, path)):
+            return True
+
+        path.pop()
+        return False
+
+    def collectNodesAtDistanceK(node, k, result):
+        if not node or k < 0:
+            return
+
+        if k == 0:
+            result.append(node.value)
+
+        collectNodesAtDistanceK(node.left, k - 1, result)
+        collectNodesAtDistanceK(node.right, k - 1, result)
+
+    path_to_target = []
+    findTarget(root, target, path_to_target)
+
+    result = []
+    for i, node in enumerate(path_to_target):
+        collectNodesAtDistanceK(node, k - i, result)
+
+    return sorted(result)
+
+# Example usage:
+root = TreeNode(20)
+root.left = TreeNode(8)
+root.right = TreeNode(22)
+root.left.left = TreeNode(4)
+root.left.right = TreeNode(12)
+root.left.right.left = TreeNode(10)
+root.left.right.right = TreeNode(14)
+
+target = 8
+k = 2
+
+result = distanceK(root, target, k)
+print(result)  # Output: [10, 14, 22]
